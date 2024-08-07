@@ -4,9 +4,9 @@ test_for_loops() {
   local sum
   # _ is a (rather obscure) dummy variable (used for throwaway values)
   for _ in $( seq 1 10 ); do
-    (( sum++ ))
+    (( sum++ )) 
   done
-  assertEqual $sum __
+  assertEqual $sum 10
 }
 
 test_while_loops() {
@@ -15,7 +15,7 @@ test_while_loops() {
     (( counter++ ))
   done
 
-  assertEqual $counter __
+  assertEqual $counter 5
 }
 
 
@@ -25,5 +25,5 @@ test_until_loops() {
     (( counter-- ))
   done
 
-  assertEqual $counter __
+  assertEqual $counter 6
 }
