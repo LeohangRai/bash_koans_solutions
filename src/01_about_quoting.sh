@@ -9,22 +9,22 @@ test_escape_character() {
     local EXAMPLE
     EXAMPLE=Use_no_escape_here_in_this_exam\
 ple
-
-    assertEqual $EXAMPLE __
+    # backslash (\) is used as an escape character for line continuation, meaning the next line after the backslash will be considered as part of the same command or statement
+    assertEqual $EXAMPLE "Use_no_escape_here_in_this_example"
 }
 
 # =============================================================================
 # Sensei advice: Use single quotes in this function asserts
 test_single_quotes() {
-    assertEqual single\ quotes    single quotes
+    assertEqual single\ quotes    'single quotes'
     # -------------------------------------------------------------------------
-    assertEqual dollar_\$        'dollar_\$'
+    assertEqual dollar_\$        'dollar_$'
     # -------------------------------------------------------------------------
-    assertEqual Double_Quotes_\" 'Double_Quotes_\"'
+    assertEqual Double_Quotes_\" 'Double_Quotes_"'
     # -------------------------------------------------------------------------
-    assertEqual backslash_\\     'backslash_\\'
+    assertEqual backslash_\\     'backslash_\'
     # -------------------------------------------------------------------------
-    assertEqual All_of_the_above_with_single_quotes\ \$\"\\ 'All_of_the_above_with_single_quotes__'
+    assertEqual All_of_the_above_with_single_quotes\ \$\"\\ 'All_of_the_above_with_single_quotes $"\'
 }
 
 # =============================================================================
@@ -33,22 +33,22 @@ test_double_quotes() {
     local D
     local EXAMPLE
 
-    assertEqual between_double\ quotes    between_double quotes
+    assertEqual between_double\ quotes    "between_double quotes"
     # -------------------------------------------------------------------------
     D=nope
-    assertEqual dollar_\$D        "dollar_$D"
+    assertEqual dollar_\$D        "dollar_\$D"
     # -------------------------------------------------------------------------
     EXAMPLE=this_is_a_variable
-    assertEqual example_$EXAMPLE  "example_\$EXAMPLE"
+    assertEqual example_$EXAMPLE  "example_$EXAMPLE"
     # -------------------------------------------------------------------------
-    assertEqual ".don't use backticks." ".`echo use backticks`."
-    assertEqual ".use this instead."    ".$(echo don\'t use this instead)."
+    assertEqual ".don't use backticks." ".$(echo "don't use backticks")."
+    assertEqual ".use this instead."    ".$(echo use this instead)."
     # -------------------------------------------------------------------------
-    assertEqual Single_Quotes_\' "Single_Quotes_''"
+    assertEqual Single_Quotes_\' "Single_Quotes_'"
     # -------------------------------------------------------------------------
-    assertEqual backslash_\\     'backslash_\\\\'
+    assertEqual backslash_\\     "backslash_\\"
     # -------------------------------------------------------------------------
-    assertEqual All_of_the_above_with_double_quotes\ \$\"\\ "All_of_the_above_with_double_quotes__"
+    assertEqual All_of_the_above_with_double_quotes\ \$\"\\ "All_of_the_above_with_double_quotes $\"\\"
 }
 
 # =============================================================================
@@ -56,25 +56,25 @@ test_ansi_c_quoting() {
     local NEWLINE
 
     # -------------------------------------------------------------------------
-    assertEqual $'\101' 'aa' # Octal
+    assertEqual $'\101' 'A' # Octal
     # -------------------------------------------------------------------------
-    assertEqual $'\x41' 'a a' # Hexadecimal
+    assertEqual $'\x41' 'A' # Hexadecimal
     # -------------------------------------------------------------------------
-    assertEqual $'\u263A' '☺ <== :)' # Unicode 2 bytes
+    assertEqual $'\u263A' '\u263A' # Unicode 2 bytes
     # -------------------------------------------------------------------------
-    assertEqual $'\U0001F603' '😃  <== :D' # Unicode 4 bytes
+    assertEqual $'\U0001F603' '\U0001F603' # Unicode 4 bytes
     # -------------------------------------------------------------------------
     NEWLINE="
 "
-    assertEqual "$NEWLINE" $'\nn'
+    assertEqual "$NEWLINE" $'\n'
     # -------------------------------------------------------------------------
     HORIZONTAL_TAB="	"
-    assertEqual "$HORIZONTAL_TAB" $'\tt'
+    assertEqual "$HORIZONTAL_TAB" $'\t'
 }
 
 # =============================================================================
 test_locale_specific_translation() {
-    assertEqual "Deprecated and dangerous" $"In use and secure"
+    assertEqual "Deprecated and dangerous" $"Deprecated and dangerous"
     # $"..." seems good for i18n but:
     #   http://www.gnu.org/software/gettext/manual/html_node/bash.html
     # Use gettext instead:
